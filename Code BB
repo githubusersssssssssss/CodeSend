@@ -1,0 +1,98 @@
+cooldown--;
+xspd = sign(keyboard_check(vk_right)) - sign(keyboard_check(vk_left))
+switch (gun)
+{
+    case GUNS.pistol:
+    xspd *= 5
+    
+    if keyboard_check(vk_space) and (cooldown <= 0) {
+    var _bullet = instance_create_layer(x,y,"Instances",obj_bullet)
+    _bullet.xspd = 10 * sign(image_xscale)
+    cooldown = 60;
+    }
+    break;
+    
+    case GUNS.rifle:
+    xspd *= 4
+    
+    if keyboard_check(vk_space) and (cooldown <= 0) {
+    var _bullet = instance_create_layer(x,y,"Instances",obj_bullet)
+    _bullet.xspd = 10 * sign(image_xscale)
+    cooldown = 30;
+    }
+    
+    break;
+    
+    case GUNS.machinegun:
+    speedincrease = clamp(speedincrease,0,50)
+    xspd *= 2
+    if keyboard_check(vk_space) and (cooldown <= 0) {
+    var _bullet = instance_create_layer(x,y,"Instances",obj_bullet)
+    _bullet.xspd = 10 * sign(image_xscale)
+    cooldown = 60 - speedincrease;
+    speedincrease += speedincrease;
+    }else if (!keyboard_check(vk_space)) {
+    speedincrease = 2;
+    }
+    break;
+    case GUNS.dagger:
+    xspd *= 5
+    break;
+    case GUNS.fist:
+    xspd *= 6
+    break;
+
+}
+var _collided = collision_line(x,y,x + sign(image_xscale) * 100, y,obj_item_generator,false,true)
+if (_collided != noone) 
+{
+    if (keyboard_check(ord("Z"))) 
+    {
+        if (_collided.generatetype == "bush") 
+        {
+            for (var _i = 0;_i < 9; _i++)
+            {
+                if (_collided.generatetype = undefined)
+                {
+                    continue;
+                    show_debug_message("sent")
+                }else 
+                {
+                    inventory[_i] = heal;
+                    show_debug_message("heal")
+                }
+            }
+        }
+    }
+}
+
+if keyboard_check(vk_up) and (place_meeting(x,y + 2,obj_collision)) {
+    yspd = -10
+}
+
+if (!place_meeting(x,y ,obj_collision)) {yspd += grv}
+
+//horizontal collision
+if (place_meeting(x + xspd , y, obj_collision)) 
+{
+    while (!place_meeting(x + sign(xspd),y, obj_collision))
+    {
+        x = x + sign(xspd)
+    }
+ xspd = 0;
+}
+
+
+//vertical collision
+if (place_meeting(x , y + yspd, obj_collision)) 
+{
+    while (!place_meeting(x,y + sign(yspd),obj_collision))
+    {
+        y = y + sign(yspd)
+    }
+    yspd = 0;
+}
+if xspd != 0 {image_xscale = sign(xspd)};
+
+x += xspd
+y += yspd
